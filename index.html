@@ -3,271 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Relational Operators Quiz</title>
+    <title>Welcome - Relational Operators Quiz</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Chosen Palette: Slate Neutrals -->
-    <!-- Application Structure Plan: The static worksheet is redesigned into a dynamic, single-page quiz application. The structure follows a task-oriented user flow: 1. Quiz View: Users are presented with one question at a time to maintain focus. They select an answer ('True' or 'False') and receive immediate visual feedback. 2. Progression: A 'Next' button guides them through the quiz, with a clear progress indicator. 3. Results View: Upon completion, a summary screen appears, displaying the final score, a Chart.js donut chart visualizing correct vs. incorrect answers, and a detailed review of their mistakes. 4. Restart: A 'Try Again' button allows for practice and reinforcement. This interactive structure was chosen over a static list because it actively engages the user, provides instant feedback crucial for learning, and offers a constructive summary that helps students learn from their errors, making it a more effective educational tool. -->
-    <!-- Visualization & Content Choices: 1. Quiz Questions: Report Info -> 15 relational expressions. Goal -> Test user knowledge. Presentation -> Displayed one-by-one in a clean card UI. Interaction -> User clicks 'True'/'False' buttons. Justification -> Focuses user on a single problem at a time. Method -> HTML/CSS and Vanilla JS DOM manipulation. 2. Quiz Results: Report Info -> User's performance on the 15 questions. Goal -> Summarize performance and provide review. Presentation -> A donut chart for a quick visual summary of the score and a detailed list of incorrect answers for review. Interaction -> A 'Try Again' button to reset the quiz. Justification -> The chart offers an immediate, high-level understanding of performance, while the detailed list is essential for learning from mistakes. Library -> Chart.js (Canvas) for the donut chart. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .chart-container {
-            position: relative;
-            margin: auto;
-            height: 250px;
-            width: 100%;
-            max-width: 250px;
-        }
-        .correct-answer {
-            background-color: #22c55e !important;
-            border-color: #16a34a !important;
-            color: white !important;
-        }
-        .incorrect-answer {
-            background-color: #ef4444 !important;
-            border-color: #dc2626 !important;
-            color: white !important;
-        }
-        .disabled-button {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-    </style>
-     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
 <body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
-
-    <div class="w-full max-w-xl bg-white rounded-xl shadow-lg p-6 sm:p-8 text-slate-800">
-        
-        <div id="quiz-view">
-            <header class="mb-6">
-                <div class="flex justify-between items-center mb-2">
-                    <h1 class="text-2xl font-bold text-slate-700">Relational Operators Quiz</h1>
-                    <p id="progress-text" class="text-sm font-medium text-slate-500">Question 1 of 15</p>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-2">
-                    <div id="progress-bar" class="bg-blue-600 h-2 rounded-full" style="width: 6.66%"></div>
-                </div>
-            </header>
-
-            <main>
-                <div class="bg-slate-50 border border-slate-200 rounded-lg p-8 mb-6 text-center">
-                    <p class="text-lg text-slate-600 mb-2">Is the following statement true or false?</p>
-                    <p id="expression-text" class="text-3xl font-bold text-blue-600 tracking-wider">4 &gt; 3</p>
-                </div>
-
-                <div id="answer-buttons" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <button onclick="selectAnswer(true)" class="w-full text-lg font-semibold py-3 px-6 rounded-lg border-2 border-slate-300 bg-white hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">True</button>
-                    <button onclick="selectAnswer(false)" class="w-full text-lg font-semibold py-3 px-6 rounded-lg border-2 border-slate-300 bg-white hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">False</button>
-                </div>
-                
-                <div id="feedback-container" class="h-14 flex items-center justify-center">
-                    <p id="feedback-text" class="text-xl font-medium"></p>
-                </div>
-                
-                <button id="next-button" onclick="nextQuestion()" class="w-full bg-slate-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-slate-700 transition-colors disabled-button" disabled>Next Question</button>
-            </main>
+    <div class="w-full max-w-lg bg-white rounded-xl shadow-lg p-8 text-center text-slate-800">
+        <h1 class="text-3xl font-bold text-slate-700 mb-4">Relational Operators Quiz</h1>
+        <p class="text-slate-600 mb-8">Please enter your name to begin.</p>
+        <div class="mb-4">
+            <input type="text" id="name-input" placeholder="Enter your name" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
-
-        <div id="results-view" class="hidden text-center">
-            <h1 class="text-3xl font-bold text-slate-700 mb-2">Quiz Complete!</h1>
-            <p id="score-text" class="text-lg text-slate-600 mb-6">You got 12 out of 15 correct.</p>
-
-            <div class="chart-container mb-6">
-                <canvas id="resultsChart"></canvas>
-            </div>
-            
-            <div id="review-section" class="text-left">
-                <h3 class="text-xl font-bold text-slate-700 mb-4">Review Your Answers</h3>
-                <div id="incorrect-answers-list" class="space-y-3">
-                </div>
-            </div>
-
-            <button onclick="restartQuiz()" class="mt-8 w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">Try Again</button>
-        </div>
+        <button onclick="startQuiz()" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">Start Quiz</button>
+        <p id="error-message" class="text-red-500 text-sm mt-4 h-5"></p>
     </div>
 
     <script>
-        const questions = [
-            { expression: '4 > 3', answer: true },
-            { expression: '10 < 9', answer: false },
-            { expression: '7 == 7', answer: true },
-            { expression: '1 != 4', answer: true },
-            { expression: '15 <= 15', answer: true },
-            { expression: '8 >= 9', answer: false },
-            { expression: '-5 < 2', answer: true },
-            { expression: '0 > -1', answer: true },
-            { expression: '6 != 6', answer: false },
-            { expression: '22 >= 21', answer: true },
-            { expression: '(2 + 3) == 5', answer: true },
-            { expression: '(10 - 4) > 6', answer: false },
-            { expression: '(3 * 3) != 9', answer: false },
-            { expression: '8 <= (4 * 2)', answer: true },
-            { expression: '(10 / 2) < 4', answer: false },
-        ];
+        function startQuiz() {
+            const nameInput = document.getElementById('name-input');
+            const errorMessage = document.getElementById('error-message');
+            const name = nameInput.value.trim();
 
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let userAnswers = [];
-        let resultsChart = null;
-
-        const quizView = document.getElementById('quiz-view');
-        const resultsView = document.getElementById('results-view');
-        const progressText = document.getElementById('progress-text');
-        const progressBar = document.getElementById('progress-bar');
-        const expressionText = document.getElementById('expression-text');
-        const answerButtons = document.getElementById('answer-buttons').children;
-        const feedbackText = document.getElementById('feedback-text');
-        const nextButton = document.getElementById('next-button');
-        const scoreText = document.getElementById('score-text');
-        const incorrectAnswersList = document.getElementById('incorrect-answers-list');
-
-        function loadQuestion() {
-            if (currentQuestionIndex >= questions.length) {
-                showResults();
-                return;
-            }
-
-            const currentQuestion = questions[currentQuestionIndex];
-            expressionText.textContent = currentQuestion.expression;
-            
-            progressText.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
-            progressBar.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
-
-            feedbackText.textContent = '';
-            nextButton.classList.add('disabled-button');
-            nextButton.disabled = true;
-
-            for (let i = 0; i < answerButtons.length; i++) {
-                answerButtons[i].disabled = false;
-                answerButtons[i].classList.remove('correct-answer', 'incorrect-answer', 'disabled-button');
-            }
-        }
-
-        function selectAnswer(userChoice) {
-            const correctAnswer = questions[currentQuestionIndex].answer;
-            userAnswers[currentQuestionIndex] = userChoice;
-            
-            for (let i = 0; i < answerButtons.length; i++) {
-                answerButtons[i].disabled = true;
-                answerButtons[i].classList.add('disabled-button');
-            }
-
-            if (userChoice === correctAnswer) {
-                score++;
-                feedbackText.textContent = 'Correct!';
-                feedbackText.className = 'text-xl font-medium text-green-600';
-                const buttonIndex = userChoice ? 0 : 1;
-                answerButtons[buttonIndex].classList.add('correct-answer');
+            if (name) {
+                window.location.href = `quiz.html?name=${encodeURIComponent(name)}`;
             } else {
-                feedbackText.textContent = 'Incorrect!';
-                feedbackText.className = 'text-xl font-medium text-red-600';
-                const userButtonIndex = userChoice ? 0 : 1;
-                const correctButtonIndex = correctAnswer ? 0 : 1;
-                answerButtons[userButtonIndex].classList.add('incorrect-answer');
-                answerButtons[correctButtonIndex].classList.add('correct-answer');
-            }
-
-            nextButton.disabled = false;
-            nextButton.classList.remove('disabled-button');
-            if(currentQuestionIndex === questions.length - 1) {
-                nextButton.textContent = 'Show Results';
+                errorMessage.textContent = 'Please enter your name.';
+                nameInput.focus();
             }
         }
-
-        function nextQuestion() {
-            currentQuestionIndex++;
-            loadQuestion();
-        }
-
-        function showResults() {
-            quizView.classList.add('hidden');
-            resultsView.classList.remove('hidden');
-
-            scoreText.textContent = `You got ${score} out of ${questions.length} correct.`;
-            
-            incorrectAnswersList.innerHTML = '';
-            let hasIncorrect = false;
-            questions.forEach((q, index) => {
-                if (userAnswers[index] !== q.answer) {
-                    hasIncorrect = true;
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'bg-slate-50 p-3 rounded-md border border-slate-200';
-                    resultItem.innerHTML = `
-                        <p class="font-semibold text-slate-700">${index + 1}. ${q.expression}</p>
-                        <p class="text-sm text-red-600">Your answer: <span class="font-medium">${userAnswers[index]}</span></p>
-                        <p class="text-sm text-green-600">Correct answer: <span class="font-medium">${q.answer}</span></p>
-                    `;
-                    incorrectAnswersList.appendChild(resultItem);
-                }
-            });
-
-            if (!hasIncorrect) {
-                 document.getElementById('review-section').innerHTML = '<p class="text-center text-green-600 font-semibold">Congratulations! You got all the answers correct!</p>';
+        
+        document.getElementById('name-input').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                startQuiz();
             }
-
-            const ctx = document.getElementById('resultsChart').getContext('2d');
-            if (resultsChart) {
-                resultsChart.destroy();
-            }
-            resultsChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Correct', 'Incorrect'],
-                    datasets: [{
-                        label: 'Quiz Results',
-                        data: [score, questions.length - score],
-                        backgroundColor: [
-                            '#22c55e',
-                            '#ef4444'
-                        ],
-                        borderColor: [
-                             '#ffffff',
-                             '#ffffff'
-                        ],
-                        borderWidth: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: {
-                           display: true,
-                           position: 'bottom',
-                           labels: {
-                               boxWidth: 20,
-                               padding: 20,
-                               font: {
-                                   size: 14
-                               }
-                           }
-                        },
-                        tooltip: {
-                            enabled: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function restartQuiz() {
-            currentQuestionIndex = 0;
-            score = 0;
-            userAnswers = [];
-            nextButton.textContent = 'Next Question';
-            resultsView.classList.add('hidden');
-            quizView.classList.remove('hidden');
-            loadQuestion();
-        }
-
-        document.addEventListener('DOMContentLoaded', loadQuestion);
+        });
     </script>
 </body>
 </html>
