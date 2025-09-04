@@ -77,7 +77,7 @@
         </div>
 
         <div id="results-view" class="hidden text-center">
-            <h1 class="text-3xl font-bold text-slate-700 mb-2">Quiz Complete!</h1>
+            <h1 id="results-title" class="text-3xl font-bold text-slate-700 mb-2">Quiz Complete!</h1>
             <p id="score-text" class="text-lg text-slate-600 mb-6">You got 12 out of 15 correct.</p>
 
             <div class="chart-container mb-6">
@@ -117,6 +117,7 @@
         let score = 0;
         let userAnswers = [];
         let resultsChart = null;
+        let userName = null;
 
         const quizView = document.getElementById('quiz-view');
         const resultsView = document.getElementById('results-view');
@@ -129,6 +130,8 @@
         const scoreText = document.getElementById('score-text');
         const incorrectAnswersList = document.getElementById('incorrect-answers-list');
         const welcomeMessage = document.getElementById('welcome-message');
+        const resultsTitle = document.getElementById('results-title');
+
 
         function loadQuestion() {
             if (currentQuestionIndex >= questions.length) {
@@ -191,6 +194,10 @@
         function showResults() {
             quizView.classList.add('hidden');
             resultsView.classList.remove('hidden');
+            
+            if (userName) {
+                resultsTitle.textContent = `Quiz Complete, ${userName}!`;
+            }
 
             scoreText.textContent = `You got ${score} out of ${questions.length} correct.`;
             
@@ -267,6 +274,7 @@
             nextButton.textContent = 'Next Question';
             resultsView.classList.add('hidden');
             quizView.classList.remove('hidden');
+            resultsTitle.textContent = 'Quiz Complete!';
             loadQuestion();
         }
 
@@ -276,6 +284,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             // Get the 'name' parameter from the URL
             const name = urlParams.get('name');
+            userName = name;
             
             if (name) {
                 // If a name is found, display it in the welcome message paragraph
